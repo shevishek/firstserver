@@ -2,8 +2,11 @@ import {books,lends} from './db.js'
 import express from'express'
 import userroute from './routes/user.route.js'
 import bookroute from './routes/book.route.js'
+import { addDate, printDate } from './middlewares/addDate.middleware.js'
 
 
+app.use(addDate)
+app.use(printDate)
 const app=express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
