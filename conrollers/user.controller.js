@@ -7,10 +7,16 @@ export const getAllUsers=('/', (req, res) => {
 export const signin=('/:code', (req, res) => {
   const {sisma}=req.body;
   const b = users.find(x => x.code == req.params.code);
-  if(!b ||sisma!=b.sisma)
+  if(!b)
+     next({ status: 404, message: `user ${req.params.id} not found!` });
+  else
+  {
+  if(sisma!=b.sisma)
     return res.status(401).json({ message: "Invalid credentials" });
   if(sisma==b.sisma)
     res.json(b);
+  }
+  
 });
 
 export const signup=('/', (req, res) => {
