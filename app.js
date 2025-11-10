@@ -3,6 +3,7 @@ import express from'express'
 import userroute from './routes/user.route.js'
 import bookroute from './routes/book.route.js'
 import { addDate, printDate } from './middlewares/addDate.middleware.js'
+import { handlerror, notFound } from './middlewares/errors.middleware.js'
 
 
 app.use(addDate)
@@ -30,6 +31,8 @@ app.patch('/', (req, res) => {
 
 app.use('/users',userroute)
 app.use('/books',bookroute)
+app.use(handlerror)
+app.use(notFound)
 const PORT = 5000;
 
 app.listen(PORT, () => {

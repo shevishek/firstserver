@@ -1,6 +1,6 @@
 import { books, lends } from "../db.js";
 
-export const getAllBooks=('/books', (req, res) => {
+export const getAllBooks=('/books', (req, res,next) => {
   const {page=1,limit=10,search=""}=req.query;
   let searchbook=books
   if(search!="")
@@ -22,14 +22,17 @@ export const getAllBooks=('/books', (req, res) => {
   // res.json(books);
 });
 
-export const getById=('/books/:id', (req, res) => {
+export const getById=('/books/:id', (req, res,next) => {
   console.log('id:', req.params.id);
 const b = books.find(x => x.id == req.params.id);
   console.log('found:', b);
-  res.json(b);
+  if(!b)
+     next({ status: 404, message: `book ${req.params.id} not found!` });
+  else
+    res.json(b);
 });
 
-export const update=('/books', (req, res) => {
+export const update=('/books', (req, res,next) => {
   const { id, name, category, price, status} = req.body
   const book=
   {
@@ -39,21 +42,29 @@ export const update=('/books', (req, res) => {
     price,
     status
   }
-  books.push(book)
-  res.json(book);
+  
+    books.push(book)
+    res.json(book);
+  
+  
 });
-export const partupdate=('/books/:id', (req, res) => {
+export const partupdate=('/books/:id', (req, res,next) => {
   const idtoupdate= +req.params.id;
   const update= req.body;
 
   const booktoupdate=books.find(x => x.id==req.params.id);
+  if(!booktoupdate)
+     next({ status: 404, message: `book ${req.params.id} not found!` });
+  else
+  {
     booktoupdate.name = update.name;
     booktoupdate.category = update.category;
     booktoupdate.price = update.price;      
     res.json(booktoupdate);
+  }
 });
 
-export const lend=('/books/lend', (req, res) => {
+export const lend=('/books/lend', (req, res,next) => {
   const{idbook,idcust}=req.body;  
   const booktoupdate=books.find(x => x.id==idbook);
   if(  booktoupdate.status == true)
@@ -77,7 +88,7 @@ export const lend=('/books/lend', (req, res) => {
   
 });
 
-export const returns=('/books/return', (req, res) => {
+export const returns=('/books/return', (req, res,next) => {
   const{idbook}=req.body;  
   const booktoupdate=books.find(x => x.id==idbook);
   if(!booktoupdate)
@@ -92,11 +103,11 @@ export const returns=('/books/return', (req, res) => {
   res.json(booktoupdate); 
 });
 
-export const deleteBook=('/books/:id', (req, res) => {
+export const deleteBook=('/books/:id', (req, res,next) => {
   const idbook= +req.params.id;
   const booktoremove=books.findIndex(x => x.id==idbook);
   if (booktoremove === -1) {
-    res.json({ message: "Book not found" });
+     next({ status: 404, message: `book ${req.params.id} not found!` });
   }
   else
   {
